@@ -2,7 +2,7 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+  background: linear-gradient(135deg, #39ff6e 0%, #1500ff 100%);
   color: #333;
   min-height: 100vh;
   transition: all 0.3s ease;
@@ -12,7 +12,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: linear-gradient(90deg, #ff6f61 0%, #ff9a9e 100%);
+  background: linear-gradient(90deg, #ff4b3b 0%, #e32aff 100%);
   padding: 2px 5px;
   text-align: center;
   color: white;
@@ -22,9 +22,13 @@ body {
 }
 
 .upload-section {
-  max-width: 700px;
-  margin: 20px auto;
-  padding: 0 15px;
+  margin: 40px auto;
+  padding: 20px;
+  max-width: 800px;
+  background: linear-gradient(135deg, #8580e2, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
 .upload-area {
@@ -158,7 +162,7 @@ button:hover {
   margin: 40px auto;
   padding: 20px;
   max-width: 800px;
-  background: linear-gradient(135deg, #f9f9f9, #e3e9ff);
+  background: linear-gradient(135deg, #e3f669, #e3e9ff);
   border-radius: 16px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
   text-align: center;
@@ -234,3 +238,7 @@ button:hover {
   opacity: 0.5;
   border: 2px dashed #ff6600;
 }
+
+
+
+

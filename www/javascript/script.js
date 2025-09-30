@@ -173,7 +173,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
-
 const pdfInput = document.getElementById("pdfFileInput");
 const pdfSelectBtn = document.getElementById("pdfSelectBtn");
 const pdfPreview = document.getElementById("pdfPreview");
@@ -207,65 +206,56 @@ new Sortable(pdfPreview, {
 pdfCreateBtn.addEventListener("click", async () => {
   const { jsPDF } = window.jspdf;
   const images = pdfPreview.querySelectorAll("img");
-  let targetSizeKB = parseInt(targetSizeInput.value) || 200;
-
-  if (targetSizeKB < 10) targetSizeKB = 10;
-  if (targetSizeKB > 20000) targetSizeKB = 20000;
-
+  const targetSizeKB = parseFloat(targetSizeInput.value) || 300; // default 500 KB
   const targetSizeBytes = targetSizeKB * 1024;
 
-  // compress image with quality & scale
-  const compressImage = (img, quality, scale) => {
+  let quality = 0.75;
+  let pdfBlob;
+
+  // Compress image function
+  const compressImage = (img, quality) => {
     return new Promise(resolve => {
       const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
       const ctx = canvas.getContext("2d");
-
-      canvas.width = img.naturalWidth * scale;
-      canvas.height = img.naturalHeight * scale;
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-      const dataUrl = canvas.toDataURL("image/jpeg", quality);
-      resolve(dataUrl);
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob(blob => resolve(blob), "image/jpeg", quality);
     });
   };
 
-  // start PDF
-  const doc = new jsPDF();
-  let totalSize = 0;
-  let baseQuality = 0.9;
-  let baseScale = 1.0;
+  do {
+    const doc = new jsPDF();
+    for (let i = 0; i < images.length; i++) {
+      const img = images[i];
+      const blob = await compressImage(img, quality);
+      const url = URL.createObjectURL(blob);
 
-  for (let i = 0; i < images.length; i++) {
-    const img = images[i];
-    let quality = baseQuality;
-    let scale = baseScale;
-    let dataUrl = await compressImage(img, quality, scale);
-    let sizeKB = atob(dataUrl.split(',')[1]).length / 1024;
+      const imgProps = doc.getImageProperties(url);
+      const pdfWidth = 180;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-    // adjust until this image + totalSize ≤ target
-    while (totalSize + sizeKB > targetSizeKB && (quality > 0.05 || scale > 0.1)) {
-      if (quality > 0.05) {
-        quality -= 0.05;
-      } else {
-        scale -= 0.05;
-      }
-      dataUrl = await compressImage(img, quality, scale);
-      sizeKB = atob(dataUrl.split(',')[1]).length / 1024;
+      if (i > 0) doc.addPage();
+      doc.addImage(url, "JPEG", 15, 20, pdfWidth, pdfHeight);
     }
 
-    const imgProps = doc.getImageProperties(dataUrl);
+    pdfBlob = doc.output("blob");
+    quality -= 0.05; // reduce quality gradually
+  } while (pdfBlob.size > targetSizeBytes && quality > 0.1);
+
+  const finalDoc = new jsPDF();
+  for (let i = 0; i < images.length; i++) {
+    const img = images[i];
+    const blob = await compressImage(img, quality);
+    const url = URL.createObjectURL(blob);
+
+    const imgProps = finalDoc.getImageProperties(url);
     const pdfWidth = 180;
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-    if (i > 0) doc.addPage();
-    doc.addImage(dataUrl, "JPEG", 15, 20, pdfWidth, pdfHeight);
-
-    totalSize += sizeKB; // update total size
+    if (i > 0) finalDoc.addPage();
+    finalDoc.addImage(url, "JPEG", 15, 20, pdfWidth, pdfHeight);
   }
 
-  const finalBlob = doc.output("blob");
-  const finalSizeKB = (finalBlob.size / 1024).toFixed(2);
-
-  alert(`📄 Final PDF size: ${finalSizeKB} KB (target: ${targetSizeKB} KB)`);
-  doc.save("my-images.pdf");
+  finalDoc.save("my-images.pdf");
 });
