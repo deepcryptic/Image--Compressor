@@ -28,6 +28,22 @@
     <!-- Preview -->
     <div id="preview"></div>
   </section>
+  <!-- PDF Maker Section -->
+<section class="pdf-section">
+  <h2 class="pdf-title">PDF Maker</h2>
+
+  <div class="pdf-upload-area" id="pdfUploadArea">
+    <p>Upload images to create a PDF</p>
+    <input type="file" id="pdfFileInput" accept="image/png, image/jpeg" multiple hidden>
+    <button id="pdfSelectBtn">Select Images</button>
+  </div>
+
+  <div class="pdf-preview" id="pdfPreview"></div>
+
+  <div class="pdf-controls">
+    <button id="pdfCreateBtn" style="display:none;">Create PDF</button>
+  </div>
+</section>
 
   <!-- Contact Section -->
   <section class="contact-section">
@@ -37,7 +53,8 @@
       <p>Phone: +91 7018697717</p>
     </div>
   </section>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script type="module" src="./javascript/script.js"></script>
 </body>
 </html>

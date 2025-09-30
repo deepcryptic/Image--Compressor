@@ -170,3 +170,59 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 });
+
+
+
+// ----------- PDF MAKER FEATURE -----------
+const pdfInput = document.getElementById("pdfFileInput");
+const pdfSelectBtn = document.getElementById("pdfSelectBtn");
+const pdfPreview = document.getElementById("pdfPreview");
+const pdfCreateBtn = document.getElementById("pdfCreateBtn");
+
+// Select Button se file input trigger
+pdfSelectBtn.addEventListener("click", () => pdfInput.click());
+
+// Image preview dikhana
+pdfInput.addEventListener("change", () => {
+  pdfPreview.innerHTML = "";
+  const files = Array.from(pdfInput.files);
+
+  if (files.length > 0) {
+    pdfCreateBtn.style.display = "inline-block";
+  }
+
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.createElement("img");
+      img.src = e.target.result;
+      pdfPreview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+});
+
+
+// ✅ Preview section ko sortable banao
+new Sortable(pdfPreview, {
+  animation: 150,   // smooth animation
+  ghostClass: "drag-ghost", // css class while dragging
+});
+
+// ✅ PDF banana (order maintain hoga)
+pdfCreateBtn.addEventListener("click", () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const images = pdfPreview.querySelectorAll("img"); // ab ye order user ke drag-drop ka hoga
+
+  images.forEach((img, index) => {
+    const imgWidth = 180;
+    const imgHeight = (img.naturalHeight * imgWidth) / img.naturalWidth;
+
+    if (index > 0) doc.addPage();
+    doc.addImage(img.src, "JPEG", 15, 20, imgWidth, imgHeight);
+  });
+
+  doc.save("my-images.pdf");
+});

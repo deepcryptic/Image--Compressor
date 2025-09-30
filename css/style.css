@@ -151,3 +151,86 @@ button:hover {
     width: 90%;
   }
 }
+
+
+/* PDF Maker Section */
+.pdf-section {
+  margin: 40px auto;
+  padding: 20px;
+  max-width: 800px;
+  background: linear-gradient(135deg, #f9f9f9, #e3e9ff);
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.pdf-title {
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.pdf-upload-area {
+  border: 2px dashed #7a7aff;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  background: #fefeff;
+}
+
+.pdf-upload-area p {
+  margin: 10px 0;
+  color: #666;
+}
+
+.pdf-upload-area button {
+  padding: 10px 16px;
+  background: #7a7aff;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.pdf-upload-area button:hover {
+  background: #5858ff;
+}
+
+.pdf-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pdf-preview img {
+  width: 150px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.pdf-controls {
+  margin-top: 20px;
+}
+
+.pdf-controls button {
+  padding: 12px 20px;
+  background: #ff7a7a;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.pdf-controls button:hover {
+  background: #ff4a4a;
+}
+.drag-ghost {
+  opacity: 0.5;
+  border: 2px dashed #ff6600;
+}
