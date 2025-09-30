@@ -173,23 +173,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
-// ----------- PDF MAKER FEATURE -----------
 const pdfInput = document.getElementById("pdfFileInput");
 const pdfSelectBtn = document.getElementById("pdfSelectBtn");
 const pdfPreview = document.getElementById("pdfPreview");
 const pdfCreateBtn = document.getElementById("pdfCreateBtn");
+const targetSizeInput = document.getElementById("targetSizePdf"); // in KB
 
-// Select Button se file input trigger
 pdfSelectBtn.addEventListener("click", () => pdfInput.click());
 
-// Image preview dikhana
 pdfInput.addEventListener("change", () => {
   pdfPreview.innerHTML = "";
   const files = Array.from(pdfInput.files);
 
-  if (files.length > 0) {
-    pdfCreateBtn.style.display = "inline-block";
-  }
+  if (files.length > 0) pdfCreateBtn.style.display = "inline-block";
 
   files.forEach(file => {
     const reader = new FileReader();
@@ -202,27 +198,64 @@ pdfInput.addEventListener("change", () => {
   });
 });
 
-
-// ✅ Preview section ko sortable banao
 new Sortable(pdfPreview, {
-  animation: 150,   // smooth animation
-  ghostClass: "drag-ghost", // css class while dragging
+  animation: 150,
+  ghostClass: "drag-ghost",
 });
 
-// ✅ PDF banana (order maintain hoga)
-pdfCreateBtn.addEventListener("click", () => {
+pdfCreateBtn.addEventListener("click", async () => {
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
+  const images = pdfPreview.querySelectorAll("img");
+  const targetSizeKB = parseFloat(targetSizeInput.value) || 500; // default 500 KB
+  const targetSizeBytes = targetSizeKB * 1024;
 
-  const images = pdfPreview.querySelectorAll("img"); // ab ye order user ke drag-drop ka hoga
+  let quality = 0.95;
+  let pdfBlob;
 
-  images.forEach((img, index) => {
-    const imgWidth = 180;
-    const imgHeight = (img.naturalHeight * imgWidth) / img.naturalWidth;
+  // Compress image function
+  const compressImage = (img, quality) => {
+    return new Promise(resolve => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob(blob => resolve(blob), "image/jpeg", quality);
+    });
+  };
 
-    if (index > 0) doc.addPage();
-    doc.addImage(img.src, "JPEG", 15, 20, imgWidth, imgHeight);
-  });
+  do {
+    const doc = new jsPDF();
+    for (let i = 0; i < images.length; i++) {
+      const img = images[i];
+      const blob = await compressImage(img, quality);
+      const url = URL.createObjectURL(blob);
 
-  doc.save("my-images.pdf");
+      const imgProps = doc.getImageProperties(url);
+      const pdfWidth = 180;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      if (i > 0) doc.addPage();
+      doc.addImage(url, "JPEG", 15, 20, pdfWidth, pdfHeight);
+    }
+
+    pdfBlob = doc.output("blob");
+    quality -= 0.05; // reduce quality gradually
+  } while (pdfBlob.size > targetSizeBytes && quality > 0.1);
+
+  const finalDoc = new jsPDF();
+  for (let i = 0; i < images.length; i++) {
+    const img = images[i];
+    const blob = await compressImage(img, quality);
+    const url = URL.createObjectURL(blob);
+
+    const imgProps = finalDoc.getImageProperties(url);
+    const pdfWidth = 180;
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    if (i > 0) finalDoc.addPage();
+    finalDoc.addImage(url, "JPEG", 15, 20, pdfWidth, pdfHeight);
+  }
+
+  finalDoc.save("my-images.pdf");
 });
