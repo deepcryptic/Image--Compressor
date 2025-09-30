@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PixelPerfect - Image Compressor</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <!-- Sticky Navbar -->
+  <nav class="navbar">
+    <h1>PixelPerfect</h1>
+  </nav>
+
+  <!-- Upload Section -->
+  <section class="upload-section">
+    <div class="upload-area" id="uploadArea">
+      <p>Drag & Drop images here OR click to upload</p>
+      <input type="file" id="fileInput" accept="image/png, image/jpeg" multiple hidden>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <label>Target File Size (KB): <input type="number" id="targetSize" placeholder="e.g. 200"></label>
+      <button id="downloadAll" style="display:none;">Download</button>
+    </div>
+
+    <!-- Preview -->
+    <div id="preview"></div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact-section">
+    <div class="contact-container">
+      <h2>Contact Us</h2>
+      <p>Email: support@pixelperfect.com</p>
+      <p>Phone: +91 7018697717</p>
+    </div>
+  </section>
+
+  <script type="module" src="./javascript/script.js"></script>
+</body>
+</html>
